@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const {default: helmet} = require('helmet');
@@ -11,8 +12,6 @@ app.use(compression());
 
 //init db
 require('./dbs/init.mongodb');
-const { checkOverload } = require('./helpers/check.connect');
-checkOverload();
 
 //init router
 app.get('/', (req, res, next)=>{
