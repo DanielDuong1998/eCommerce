@@ -27,7 +27,7 @@ class AccessService {
             throw new BadRequestError('Something wrong happend! Pls relogin');
         }
 
-        if(keyStore.refreshTokens !== refreshToken) throw new AuthFailureError('Shop not registered!');
+        if(keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registered!');
         
         const foundShop = await findByEmail({email});
         if(!foundShop) throw new AuthFailureError('Shop not registered');

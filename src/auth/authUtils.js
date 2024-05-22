@@ -9,7 +9,7 @@ const HEADER = {
     API_KEY: 'x-api-key',
     CLIENT_ID: 'x-client-id',
     AUTHORIZATION: 'authorization',
-    REFRESH_TOKEN: 'refreshToken'
+    REFRESH_TOKEN: 'refresh-token'
 }
 
 const createTokenPair = async (payload, publicKey, privateKey)=>{
@@ -86,7 +86,7 @@ const authenticationV2 = asyncHandler(async (req, res, next) =>{
     const keyStore = await findByUserId(userId);
     if(!keyStore) throw new NotFoundError('Not found keyStore');
 
-    if(req.headers[HEADER.API_KEY]){
+    if(req.headers[HEADER.REFRESH_TOKEN]){
         try{
             const refreshToken = req.headers[HEADER.REFRESH_TOKEN];
             const decodeUser = JWT.verify(refreshToken, keyStore.privateKey);
