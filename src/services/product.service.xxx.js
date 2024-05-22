@@ -2,6 +2,7 @@
 
 const { BadRequestError } = require('../core/error.response');
 const {product, clothing, electronic, furniture} = require('../models/product.model');
+const { findAllDraftsForShop } = require('../models/repositories/product.repo');
 // define Factory class to create products
 class ProductFactory{
 
@@ -16,6 +17,11 @@ class ProductFactory{
         if(!productClass) throw BadRequestError(`Invalid product types ${type}`);
 
         return new productClass(payload).createProduct();
+    }
+
+    static async findAllDraftsForShop({product_shop, limit = 50, skip = 0}){
+        const query = {product_shop, isDraft: true};
+        return await findAllDraftsForShop({query, limit, skip});
     }
 }
 

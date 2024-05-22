@@ -14,6 +14,21 @@ class ProductController{
             })
         }).send(res);
     }
+
+    /**
+     * @desc Get all Drafts for shop
+     * @param {*} req 
+     * @param {*} res 
+     * @return {JSON}  
+     */
+    getAllDraftForShop = async (req, res, next) =>{
+        new SuccessResponse({
+            message: 'Get list Draft success!',
+            metadata: await ProductServiceV2.findAllDraftsForShop({
+                product_shop: req.user.userId
+            })
+        }).send(res);
+    }
 }
 
 module.exports = new ProductController();
