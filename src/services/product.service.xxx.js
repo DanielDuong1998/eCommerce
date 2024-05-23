@@ -2,7 +2,7 @@
 
 const { BadRequestError } = require('../core/error.response');
 const {product, clothing, electronic, furniture} = require('../models/product.model');
-const { findAllDraftsForShop, findAllPublishForShop, publishProductByShop, unPublishProductByShop } = require('../models/repositories/product.repo');
+const { findAllDraftsForShop, findAllPublishForShop, publishProductByShop, unPublishProductByShop, searchProductByUser } = require('../models/repositories/product.repo');
 // define Factory class to create products
 class ProductFactory{
 
@@ -39,7 +39,10 @@ class ProductFactory{
         const query = {product_shop, isPublished: true};
         return await findAllPublishForShop({query, limit, skip});
     }
-    
+
+    static async searchProducts({keySearch}){
+        return await searchProductByUser({keySearch});
+    }
 }
 
 // define base product class
