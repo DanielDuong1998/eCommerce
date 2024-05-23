@@ -94,6 +94,17 @@ const queryProduct = async ({query, limit, skip}) =>{
     .exec();
 }
 
+const updateProductById = async ({
+    productId,
+    bodyUpdate,
+    model,
+    isNew = true
+    })=>{
+    return await model.findByIdAndUpdate(productId, bodyUpdate,{
+        new: isNew
+    });
+}
+
 module.exports = {
     findAllDraftsForShop,
     findAllPublishForShop,
@@ -102,4 +113,5 @@ module.exports = {
     searchProductByUser,
     findAllProducts,
     findProduct,
+    updateProductById,
 }
