@@ -4,6 +4,8 @@ const { BadRequestError } = require("../core/error.response");
 const { findCartById } = require("../models/repositories/cart.repo");
 const { checkProductByServer } = require("../models/repositories/product.repo");
 const { getDiscountAmount } = require("./discount.service");
+const { acquiredLock, releaseLock } = require("./redis.service");
+const {order} = require('../models/order.model');
 
 class CheckoutService {
 
@@ -111,6 +113,82 @@ class CheckoutService {
             shop_order_ids_new,
             checkout_order
         }
+    }
+
+    static async orderByUser({
+        shop_order_ids,
+        cartId,
+        userId,
+        user_address = {},
+        user_payment = {}
+    }){
+        const {shop_order_ids_new, checkout_order} = await CheckoutService.checkoutReview({
+            cartId,
+            userId,
+            shop_order_ids: shop_order_ids_new
+        });
+
+        //check lai mot lan nua xem vuot so luong ton kho hay khong
+        //get new array Products
+        const products = shop_order_ids_new.flatMap(order => order.item_products );
+        console.log(`[1]: `, products);
+        const acquireProduct = [];
+        for(let i = 0; i < products.length; i++){
+            const {productId, quantity} = products[i];
+            const keyLock = await acquiredLock(productId, quantity, cartId);
+            acquiredProduct.push(keyLock ? true : false);
+            if(keyLock){
+                await releaseLock(keyLock);
+            }
+        }
+
+        //check if co mot san pham het hang trong kho
+        if(acquireProduct.includes(false)){
+            throw new BadRequestError(`Some products were updated, please back to the cart...`);
+        }
+
+        const newOrder = await order.create({
+            order_userId: userId,
+            order_checkout: checkout_order,
+            order_shipping: user_address,
+            order_payment: user_payment,
+            order_products: shop_order_ids_new
+        });
+
+        // truong hop: new insert thanh cong, thi remove product co trong cart
+        if(newOrder){
+
+        }
+
+        return newOrder;
+    }
+
+    /*
+        1> Query Order [Users]
+    */
+   static async getOrderByUser(){
+
+   }
+
+    /*
+        1> Query Order using id [Users]
+    */
+    static async getOneOrderByUser(){
+
+    }
+
+    /*
+        1> Query Order using id [Users]
+    */
+    static async cancelOrderByUser(){
+
+    }
+
+    /*
+        1> Update Order Status [shop | Admin]
+    */
+    static async updateOrderStatusByShop(){
+
     }
 }
 
